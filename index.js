@@ -4,67 +4,39 @@ const client = new Client();
 
 client.on('ready', () => {
     console.log('Bot Now connected!');
-    console.log('Logged In as', client.user.tag)
-    client.user.setStatus('dnd'); // online, idle, invisible, dnd
-
-    console.log('Bot status: ', client.user.presence.status);
-
-    // Bot sending a Message to a text channel called test
-    const testChannel = client.channels.find(x => x.name === 'test')
-    console.log(testChannel)
-    // client.channels.find(c => c.name === 'test').send('Hello Server!')
-
 });
 
 // Bot listenning messages
 client.on('message', msg => {
-    console.log(msg.content)
-    if (msg.content === 'ping') {
-        msg.reply('pong')
-    }
-
-    if (msg.content === 'hello') {
-        msg.channel.send(`Hello ${msg.author}`);
-    }
-
-    if (msg.content.includes('!test')) {
-        msg.channel.send('Glad you are testing');
-    }
-
-    if (msg.content === '!fazt') {
-        msg.channel.send('https://youtube.com/fazttech');
-        msg.channel.send('https://youtube.com/faztcode');
-    }
-
-    if (msg.content === '!pretty') {
-        const embed = new RichEmbed()
-            // .setTitle('A pretty message')
-            // .setColor(0xFF0000)
-            // .setDescription('Hello', msg.author);
-            .addField('Something One', 'Some content', true)
-            .addField('Something Two', 'Some content Two', true)
-            .addField('Something Three', 'Some content Three', false)
-            .setAuthor('Fazt', 'https://pngimage.net/wp-content/uploads/2018/05/code-logo-png-4.png');
-        msg.channel.send(embed);
-    }
-
-    // Deleting 100 messages
-    if (msg.content.startsWith('!clean')) {
-        async function clear() {
-            try {
-                // await msg.delete();
-                const fetched = await msg.channel.fetchMessages({limit: 99});
-                msg.channel.bulkDelete(fetched);;
-                console.log('Messages deleted');
-            }
-            catch (e) {
-                console.log(e);
-            }
+    //Genera las urls del usuario
+    if (msg.content.indexOf("!getAll") > -1) {
+        var spl = msg.content.split("!getAll ")[1].split(" ");
+        var server = spl.length > 1 ? spl[0] : "euw";
+        var user = spl[1].split(",");
+        if (user !== "" && user !== undefined && user !== null) {
+            msg.channel.send("https://" + server + ".op.gg/summoner/userName=" + user);
+            msg.channel.send("!b mastery " + server + " " + user);
         }
-        clear();
+    } 
+    //Recupera los datos de los multiquery de op gg
+    else if (msg.content.indexOf("op.gg") > -1 && msg.author.username !== "Scouting Bot") {
+        var url = new URL(msg.content);
+        console.log(msg)
+        var server = url.host.split(".")[0]
+        if (url.pathname.indexOf("multi_old") > -1) {
+            var spl = msg.content.split("query=")[1].replace(/%20/g, " ").split("%2C")
+            for (us in spl) {
+                if (spl[us] !== null && spl[us] !== "") {
+                    msg.channel.send("!b mastery " + server + " " + spl[us])
+                }                    
+            }
+        } else {
+            var spl = msg.content.split("userName=")[1].replace(/%20/g, " ")
+            msg.channel.send("!b mastery " + server + " " + spl[1])
+        }
     }
 });
 
 
-const token = 'NTM5ODYzMTAxOTUzMDE1ODEz.DzIiXQ.abZZlw_vs1zkKQ4qEMEpZUgAno4';
+const token = 'ODUxNDkzMDk5NTk4MzgxMDg3.YL5Evg.n-0XY6oljzq7hOH2hi6lFH24sK0';
 client.login(token);
