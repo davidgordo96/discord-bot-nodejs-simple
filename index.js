@@ -1,7 +1,7 @@
 const { Client, RichEmbed } = require('discord.js');
 const axios = require('axios');
 const tokens = require("./tokens.js")
-const tokenRiot = tokens.tokenRiot
+const tokenRiot = process.env.token || tokens.tokenRiot
 
 const token = process.env.token || tokens.token;
 
