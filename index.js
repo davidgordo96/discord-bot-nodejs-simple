@@ -4,6 +4,11 @@ const tokens = require("./tokens.js")
 import { token } from './config';
 const tokenRiot = tokens.tokenRiot
 
+const aws = require('aws-sdk');
+
+let s3 = new aws.S3({
+  accessKeyId: process.env.token
+});
 const generalLimit = 10;
 const client = new Client();
 var arrChamps = [];
@@ -145,4 +150,4 @@ async function masteryFunc (invocador, limit) {
     });
 }
 
-client.login(token);
+client.login(s3);
