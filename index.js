@@ -3,11 +3,8 @@ const axios = require('axios');
 const tokens = require("./tokens.js")
 const tokenRiot = tokens.tokenRiot
 
-const aws = require('aws-sdk');
+const token = process.env.token || tokens.token;
 
-let s3 = new aws.S3({
-  accessKeyId: process.env.token
-});
 const generalLimit = 10;
 const client = new Client();
 var arrChamps = [];
