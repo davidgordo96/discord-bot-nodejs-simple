@@ -43,6 +43,7 @@ client.on('ready', () => {
 // Bot listenning messages
 client.on('message', msg => {
     var content = msg.content
+    var contentSpl = content.split(" ")
     var command = content.substring(0, content.indexOf(" ")) == "" ? content : content.substring(0, content.indexOf(" "))
     var args = content.substring(content.indexOf(" ") + 1)
     //Genera las urls del usuario (Funciona)
@@ -62,7 +63,6 @@ client.on('message', msg => {
                 var spl = url.pathname.substring(url.pathname.indexOf("query=") + "query=".length).replace(/%20/g, " ").split("%2C")                       
                 for (us in spl) {
                     if (spl[us] !== null && spl[us] !== "") {
-                        console.log(spl[us])
                         let msgRet = spl[us] + "\n" + await masteryFunc(spl[us], generalLimit) + "\n\n"
                         if (msgRet !== null && msgRet !== undefined && msgRet !== "") {
                             msg.channel.send(spl[us] + ":\n" + await masteryFunc(spl[us], generalLimit) + "\n\n");
@@ -94,7 +94,7 @@ client.on('message', msg => {
     }
     //Help
     else if (command === "!help"){
-        msg.channel.send("Here you will find the commands you can use:\n=> !getAll [summonerName]\n=> !getAll [server] [summonerName]\n=> !op [individual_OP.GG_URL]\n=> !op [multiquery_OP.GG_URL]\n=> !mastery [summonerName]")
+        msg.channel.send("Here you will find the commands you can use:\n=>!getAll [summonerName]\n=>!getAll [server] [summonerName]\n=>!op [individual_OP.GG_URL]\n=>!op [multiquery_OP.GG_URL]\n=>!mastery [summonerName]")
     }
 });
 
@@ -106,7 +106,6 @@ async function getAll (args) {
     if (user !== "" && user !== undefined && user !== null) {
         retArgs[0] = "https://" + server + ".op.gg/summoner/userName=" + user;   
         retArgs[1] = await masteryFunc (user, generalLimit)
-        console.log(retArgs[1])
         return retArgs;
     }
 }
