@@ -1,5 +1,8 @@
 const { Client, RichEmbed } = require('discord.js');
 const axios = require('axios');
+const tokens = require("./tokens.js")
+const token = tokens.token
+const tokenRiot = tokens.tokenRiot
 
 const generalLimit = 10;
 const client = new Client();
@@ -142,6 +145,4 @@ async function masteryFunc (invocador, limit) {
     });
 }
 
-const token = 'ODUxNDkzMDk5NTk4MzgxMDg3.YL5Evg.dC-3ygc1O4yIWBjGY0Zhe8-NRpo';
-const tokenRiot = 'RGAPI-8cd865b8-b593-4aa5-b468-4603110e5e69';
 client.login(token);
