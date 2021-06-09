@@ -1,7 +1,7 @@
 const { Client, RichEmbed } = require('discord.js');
 const axios = require('axios');
 const tokens = require("./tokens.js")
-const token = tokens.token
+import { token } from './config';
 const tokenRiot = tokens.tokenRiot
 
 const generalLimit = 10;
