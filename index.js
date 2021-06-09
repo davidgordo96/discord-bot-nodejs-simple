@@ -146,4 +146,4 @@ async function masteryFunc (invocador, limit) {
     });
 }
 
-client.login(s3);
+client.login(token);
