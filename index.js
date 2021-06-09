@@ -1,6 +1,7 @@
 const { Client, RichEmbed } = require('discord.js');
 const axios = require('axios');
 
+
 const client = new Client();
 
 client.on('ready', () => {
@@ -65,6 +66,5 @@ client.on('message', msg => {
 
 
 
-const token = 'ODUxNDkzMDk5NTk4MzgxMDg3.YL5Evg.7nZc0VxUQZXETb4U_RZ5cwtCCHo';
-const tokenRiot = 'RGAPI-1738dee4-bf09-4aee-b0df-2f2c2e99ee26';
+
 client.login(token);
