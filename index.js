@@ -1,7 +1,6 @@
 const { Client, RichEmbed } = require('discord.js');
 const axios = require('axios');
 const tokens = require("./tokens.js")
-import { token } from './config';
 const tokenRiot = tokens.tokenRiot
 
 const aws = require('aws-sdk');
