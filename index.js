@@ -1,4 +1,5 @@
-const { Client, RichEmbed } = require('discord.js');
+const Discord = require('discord.js');
+
 const axios = require('axios');
 const tokens = require("./tokens.js")
 const tokenRiot = process.env.tokenRiot || tokens.tokenRiot
@@ -6,8 +7,10 @@ const tokenRiot = process.env.tokenRiot || tokens.tokenRiot
 const token = process.env.token || tokens.token;
 
 const generalLimit = 10;
-const client = new Client();
+const client = new Discord.Client();
+const commands = ["!getAll", "!op", "!mastery", "!test"]
 var arrChamps = [];
+var embed = null;
 
 client.on('ready', () => {
     console.log('Bot Now connected!');
@@ -46,59 +49,97 @@ client.on('ready', () => {
 
 // Bot listenning messages
 client.on('message', msg => {
+    
     var content = msg.content
-    var contentSpl = content.split(" ")
     var command = content.substring(0, content.indexOf(" ")) == "" ? content : content.substring(0, content.indexOf(" "))
     var args = content.substring(content.indexOf(" ") + 1)
-    //Genera las urls del usuario (Funciona)
-    if (command === "!getAll") {        
-        (async () => {
-            let msgRet = await getAll(args);
-            msg.channel.send(msgRet[0]);
-            msg.channel.send(msgRet[1]);
-        })()
-    } 
-    //Recupera los datos de op gg (Funciona)
-    else if (command === "!op") {
-        var url = new URL(args);
-        var server = url.host.split(".")[0]
-        if (url.pathname.indexOf("multi_old") > -1) { 
+    if (commands.includes(command)) {
+        embed = new Discord.MessageEmbed()
+        //Genera las urls del usuario (Funciona)
+        if (command === "!getAll") {        
             (async () => {
-                var spl = url.pathname.substring(url.pathname.indexOf("query=") + "query=".length).replace(/%20/g, " ").split("%2C")                       
-                for (us in spl) {
-                    if (spl[us] !== null && spl[us] !== "") {
-                        let msgRet = spl[us] + "\n" + await masteryFunc(spl[us], generalLimit) + "\n\n"
-                        if (msgRet !== null && msgRet !== undefined && msgRet !== "") {
-                            msg.channel.send(spl[us] + ":\n" + await masteryFunc(spl[us], generalLimit) + "\n\n");
-                        }
-                    }                    
-                }
+                let msgRet = await getAll(args);
+                embed.setTitle("Recuperación del OP GG y las maestrías de " + args)
+                    .setColor(0x00AE86)
+                    .setTimestamp()
+                    .addField("OP.GG:" , msgRet[0])
+                arrDataToEmbed(msgRet[1])
+                msg.channel.send( { embed } )
             })()
-        } else {         
-            (async () => {
-                var invocador = url.pathname.substring(url.pathname.indexOf("userName=") + "userName=".length).replace(/%20/g, " ")   
-                let msgRet = await masteryFunc(invocador, generalLimit);
-                msg.channel.send(msgRet);
-            })()
-        }
-    } 
-    //Recupera info de la maestría de la API de RIOT
-    else if(command === "!mastery"){
-        if (args !== null && args !== undefined && args !== "") {   
-            (async () => {
-                var argsSpl = args.split(" ")
-                var invocador = argsSpl[0];
-                var limit = argsSpl >= 2 && isNaN(parseInt(argsSpl[1])) == false ? argsSpl[1] : generalLimit
-                let msgRet = await masteryFunc(invocador, limit);
-                msg.channel.send(msgRet);
-            })()            
-        } else {
-            msg.channel.send("This command must have at least an argument that can be a summonerName or a list of summonersName separate by ','\nAs a default value, it will return 15 result unless you add another argument added with a '-'. Example\n==>!mastery [summonerName/summonersName]-[limit]")
+        } 
+        //Recupera los datos de op gg (Funciona)
+        else if (command === "!op") {
+            var url = new URL(args);
+            var server = url.host.split(".")[0]
+            if (url.pathname.indexOf("multi_old") > -1) { 
+                (async () => {
+                    var spl = url.pathname.substring(url.pathname.indexOf("query=") + "query=".length).replace(/%20/g, " ").split("%2C")
+                    for (us in spl) {
+                        if (spl[us] !== null && spl[us] !== "") {
+                            var invocador = spl[us].trim()
+                            let msgRet = await getAll(invocador);
+                            embed.setTitle("Recuperación del OP GG y las maestrías de " + invocador)
+                                .setColor(0x00AE86)
+                                .setTimestamp()
+                                .addField("OP.GG:" , msgRet[0])
+                            arrDataToEmbed(msgRet[1])
+                            msg.channel.send( { embed } )
+                            embed = new Discord.MessageEmbed()
+                        }                    
+                    }
+                })()
+            } else {         
+                (async () => {
+                    var invocador = url.pathname.substring(url.pathname.indexOf("userName=") + "userName=".length).replace(/%20/g, " ").trim()
+                    let msgRet = await getAll(invocador);
+                    embed.setTitle("Recuperación del OP GG y las maestrías de " + invocador)
+                        .setColor(0x00AE86)
+                        .setTimestamp()
+                        .addField("OP.GG:" , msgRet[0])
+                    arrDataToEmbed(msgRet[1])
+                    msg.channel.send( { embed } )
+                })()
+            }
+        } 
+        //Recupera info de la maestría de la API de RIOT
+        else if(command === "!mastery"){
+            if (args !== null && args !== undefined && args !== "") {   
+                (async () => {
+                    var argsSpl = args.split(" ")
+                    var invocador = argsSpl[0];
+                    var limit = argsSpl >= 2 && isNaN(parseInt(argsSpl[1])) == false ? argsSpl[1] : generalLimit
+
+                    let msgRet = await masteryFunc(invocador, limit);
+                    embed.setTitle("Recuperación del OP GG y las maestrías de " + args)
+                        .setColor(0x00AE86)
+                        .setTimestamp()
+                    arrDataToEmbed(msgRet)
+                    msg.channel.send( { embed } )
+                })()            
+            } else {
+                msg.channel.send("Este comando debe tener al menos un argumento correspondiente al nombre de invoicador o a una lista de invocadores serparados con comas")
+            }
+        } else if (command === "!test") {
+            msg.channel.send("!getAll Gordp")
+            msg.channel.send("!op https://euw.op.gg/summoner/userName=Gordp")
+            msg.channel.send("!op https://euw.op.gg/multi_old/query=Gordp%2Csergioycompany")
+            msg.channel.send("!mastery Gordp")       
         }
     }
     //Help
-    else if (command === "!help"){
-        msg.channel.send("Here you will find the commands you can use:\n=>!getAll [summonerName]\n=>!getAll [server] [summonerName]\n=>!op [individual_OP.GG_URL]\n=>!op [multiquery_OP.GG_URL]\n=>!mastery [summonerName]")
+    if (command === "!help" || (command.indexOf("!") === 0 && !commands.includes(command))) {
+        
+        embed = new Discord.MessageEmbed()
+        embed.setTitle("A continuación se muestran los comandos admitidos por este bot: ")
+        .setColor(0x00AE86)
+        .setTimestamp().addFields(
+            {name :"!getAll [summonerName]", value: "Devuelve el OP GG de un jugador y sus 10 campeones con mayor maestría"},
+            {name :"!op [individual_OP.GG_URL]", value: "Devuelve el OP GG de un jugador "},
+            {name :"!op [multiquery_OP.GG_URL]", value: "Devuelve el OP GG de una lista de jugadores separados por comas."},
+            {name :"!mastery [summonerName]", value: "Devuelve los " + generalLimit + " campeones con mayor maestría de un jugador"},
+            {name :"!mastery [summonerName] [limit]", value: "Devuelve los [limit] campeones con mayor maestría de un jugador"}
+        )        
+        msg.channel.send( { embed } )        
     }
 });
 
@@ -114,28 +155,31 @@ async function getAll (args) {
     }
 }
 
-async function masteryFunc (invocador, limit) {    
+async function masteryFunc (invocador, limit) {        
     var idInvocador = "";
     return await axios.get('https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + invocador + '?api_key=' + tokenRiot)
     .then(response => {
-        idInvocador = response.data.id            
+        idInvocador = response.data.id
     }).then (await function () {
         if (idInvocador !== null && idInvocador !== undefined && idInvocador !== "") {
             return axios.get('https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + idInvocador + '?api_key=' + tokenRiot)
             .then(resp => {
                 let data = resp.data
-                let strRet = ""
+                let arrRet = []
                 for (let i = 0; i < data.length && i < limit ; i++) {
                     let c = data[i]
                     let lastPlayed = new Date(c.lastPlayTime)
                     lastPlayed = (lastPlayed.getDate() < 10 ? "0" + lastPlayed.getDate() : lastPlayed.getDate())
                         + "/" + ((lastPlayed.getMonth() + 1) < 10 ? "0" + (lastPlayed.getMonth() + 1) : (lastPlayed.getMonth() + 1))
                         + "/" + lastPlayed.getFullYear() 
-                    let championInfo = (i + 1) + ". => " + arrChamps[c.championId] +  "(" + c.championLevel + "), last played : " + lastPlayed + "";
-                    strRet = strRet + championInfo + (i < data.length -1 && i < limit -1 ? "\n" : "")
+                    arrRet[arrRet.length] = {
+                        champName : arrChamps[c.championId],
+                        champLv : c.championLevel,
+                        lastPlayed : lastPlayed
+                    }
                     
                 }
-                return strRet;
+                return arrRet;
         
             }).catch(error => {
                 console.log(error);
@@ -146,4 +190,13 @@ async function masteryFunc (invocador, limit) {
     });
 }
 
+function arrDataToEmbed (arr) {
+    for (var i = 0; (i*2) < arr.length; i++) {
+        console.log(i)
+        embed.addFields(
+            {name :arr[(i*2)].champName, value: arr[(i*2)+1].champName, inline : true},
+            {name :arr[(i*2)].champLv, value: arr[(i*2)+1].champLv, inline : true},
+            {name :arr[(i*2)].lastPlayed, value: arr[(i*2)+1].lastPlayed, inline : true})
+    }
+}
 client.login(token);
