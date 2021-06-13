@@ -10,10 +10,24 @@ let mmr= function (args,msg) {
                 embed = new Discord.MessageEmbed()
                 embed.setTitle("MMR de: "+args)
                 .setColor(0x00AE86)
-                .addFields(
-                    {name :"SoloQ", value: "MMR: "+response.data.ranked.avg+ ", Puntos de desviacion: "+response.data.ranked.err+ ", Rango al que pertenece:"+response.data.ranked.closestRank},
-                    {name :"Normal", value: "MMR: "+response.data.normal.avg+ ", Puntos de desviacion: "+response.data.normal.err+ ", Rango al que pertenece:"+response.data.normal.closestRank}
-                )
+                if(response.data.ranked.avg !== null){
+                    embed.addField(
+                        "SoloQ", "MMR: "+response.data.ranked.avg+ ", Puntos de desviacion: "+response.data.ranked.err+ ", Rango al que pertenece:"+response.data.ranked.closestRank
+                    )
+                }else{
+                    embed.addField(
+                        "SoloQ", "El invocador no ha jugado suficientes partidas recientemente"
+                    ) 
+                }
+                if(response.data.normal.avg !== null){
+                    embed.addField(
+                        "Normal",  "MMR: "+response.data.normal.avg+ ", Puntos de desviacion: "+response.data.normal.err+ ", Rango al que pertenece:"+response.data.normal.closestRank
+                    )
+                }else{
+                    embed.addField(
+                        "Normal",  "El invocador no ha jugado suficientes partidas recientemente"
+                    )
+                }
                 msg.channel.send( { embed } );
             }
             
