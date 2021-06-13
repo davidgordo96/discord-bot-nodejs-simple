@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
 
 const axios = require('axios');
-const tokens = require("./tokens.js")
-const tokenRiot = process.env.tokenRiot || tokens.tokenRiot
+const tokens = require("./tokens.js");
+const funciones = require("./funciones.js");
+const tokenRiot = process.env.tokenRiot || tokens.tokenRiot;
 
 const token = process.env.token || tokens.token;
 
@@ -61,7 +62,6 @@ client.on('message', msg => {
                 let msgRet = await getAll(args);
                 embed.setTitle("Recuperación del OP GG y las maestrías de " + args)
                     .setColor(0x00AE86)
-                    .setTimestamp()
                     .addField("OP.GG:" , msgRet[0])
                 arrDataToEmbed(msgRet[1])
                 msg.channel.send( { embed } )
@@ -80,7 +80,6 @@ client.on('message', msg => {
                             let msgRet = await getAll(invocador);
                             embed.setTitle("Recuperación del OP GG y las maestrías de " + invocador)
                                 .setColor(0x00AE86)
-                                .setTimestamp()
                                 .addField("OP.GG:" , msgRet[0])
                             arrDataToEmbed(msgRet[1])
                             msg.channel.send( { embed } )
@@ -94,7 +93,6 @@ client.on('message', msg => {
                     let msgRet = await getAll(invocador);
                     embed.setTitle("Recuperación del OP GG y las maestrías de " + invocador)
                         .setColor(0x00AE86)
-                        .setTimestamp()
                         .addField("OP.GG:" , msgRet[0])
                     arrDataToEmbed(msgRet[1])
                     msg.channel.send( { embed } )
@@ -112,7 +110,6 @@ client.on('message', msg => {
                     let msgRet = await masteryFunc(invocador, limit);
                     embed.setTitle("Recuperación del OP GG y las maestrías de " + args)
                         .setColor(0x00AE86)
-                        .setTimestamp()
                     arrDataToEmbed(msgRet)
                     msg.channel.send( { embed } )
                 })()            
@@ -126,24 +123,7 @@ client.on('message', msg => {
             msg.channel.send("!mastery Gordp")       
         }
         else if (command === "!mmr") {
-            if (args !== null && args !== undefined && args !== "") {
-                axios.get('https://euw.whatismymmr.com/api/v1/summoner?name=' + args)
-                .then(response => {
-                    if(response.status ===200){
-
-                        embed = new Discord.MessageEmbed()
-                        embed.setTitle("MMR de: "+args)
-                        .setColor(0x00AE86)
-                        .addFields(
-                            {name :"SoloQ", value: "MMR: "+response.data.ranked.avg+ ", Puntos de desviacion: "+response.data.ranked.err+ ", Rango al que pertenece:"+response.data.ranked.closestRank},
-                            {name :"Normal", value: "MMR: "+response.data.normal.avg+ ", Puntos de desviacion: "+response.data.normal.err+ ", Rango al que pertenece:"+response.data.normal.closestRank}
-                        )
-                
-                        msg.channel.send( { embed } )
-
-                    }
-                })
-            }
+            embed=funciones.mmr(args, msg);
         }
     }
     //Help
@@ -152,12 +132,13 @@ client.on('message', msg => {
         embed = new Discord.MessageEmbed()
         embed.setTitle("A continuación se muestran los comandos admitidos por este bot: ")
         .setColor(0x00AE86)
-        .setTimestamp().addFields(
+        .addFields(
             {name :"!getAll [summonerName]", value: "Devuelve el OP GG de un jugador y sus 10 campeones con mayor maestría"},
             {name :"!op [individual_OP.GG_URL]", value: "Devuelve el OP GG de un jugador "},
             {name :"!op [multiquery_OP.GG_URL]", value: "Devuelve el OP GG de una lista de jugadores separados por comas."},
             {name :"!mastery [summonerName]", value: "Devuelve los " + generalLimit + " campeones con mayor maestría de un jugador"},
-            {name :"!mastery [summonerName] [limit]", value: "Devuelve los [limit] campeones con mayor maestría de un jugador"}
+            {name :"!mastery [summonerName] [limit]", value: "Devuelve los [limit] campeones con mayor maestría de un jugador"},
+            {name :"!mmr [summonerName]", value: "Devuelve los valores de MMR para las colas de SoloQ y Normal"}
         )        
         msg.channel.send( { embed } )       
     }
