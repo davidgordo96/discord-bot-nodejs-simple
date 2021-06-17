@@ -12,7 +12,7 @@ let mmr= function (args,msg) {
                 .setColor(0x00AE86)
                 if(response.data.ranked.avg !== null){
                     embed.addField(
-                        "SoloQ", "MMR: "+response.data.ranked.avg+ ", Puntos de desviacion: "+response.data.ranked.err+ ", Rango al que pertenece:"+response.data.ranked.closestRank
+                        "SoloQ", "MMR: "+response.data.ranked.avg+ ", Puntos de desviacion: "+response.data.ranked.err+ ", Rango al que pertenece: "+response.data.ranked.closestRank
                     )
                 }else{
                     embed.addField(
@@ -21,7 +21,7 @@ let mmr= function (args,msg) {
                 }
                 if(response.data.normal.avg !== null){
                     embed.addField(
-                        "Normal",  "MMR: "+response.data.normal.avg+ ", Puntos de desviacion: "+response.data.normal.err+ ", Rango al que pertenece:"+response.data.normal.closestRank
+                        "Normal",  "MMR: "+response.data.normal.avg+ ", Puntos de desviacion: "+response.data.normal.err+ ", Rango al que pertenece: "+response.data.normal.closestRank
                     )
                 }else{
                     embed.addField(
