@@ -162,7 +162,6 @@ client.on('message', msg => {
         }else if(command ==="!terminar"){
             dispatcher.end();
         }
-
     }
     //Help
     if (command === "!help" || (command.indexOf("!") === 0 && !commands.includes(command))) {
