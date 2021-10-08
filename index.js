@@ -9,12 +9,14 @@ const token = process.env.token || tokens.token;
 
 const generalLimit = 10;
 const client = new Discord.Client();
-const commands = ["!getAll", "!op", "!mastery", "!test", "!mmr"]
+const commands = ["!getAll", "!op", "!mastery", "!test", "!mmr", "!p", "!pausa", "!reanudar", "!terminar"]
 var arrChamps = [];
 var embed = null;
 
 client.on('ready', () => {
     console.log('Bot Now connected!');
+    const dispatcher = null ;
+    const connection = null;
     //Recuperación de los campeones del LOL con sus IDs
     var version = "0"
     axios.get('https://ddragon.leagueoflegends.com/api/versions.json')
@@ -125,6 +127,42 @@ client.on('message', msg => {
         else if (command === "!mmr") {
             embed=funciones.mmr(args, msg);
         }
+        else if(command ==="!p"){
+                let voiceChannel = msg.member.voice.channel;
+                if (!voiceChannel || voiceChannel.type !== 'voice') {
+                msg.channel.send('¡Necesitas unirte a un canal de voz primero!.').catch(error => msg.channel.send(error));
+                } else if (msg.guild.voiceConnection) {
+                msg.channel.send('Ya estoy conectado en un canal de voz.');
+                } else {
+                 msg.channel.send('Conectando...').then(m => {
+                    voiceChannel.join().then(() => {
+                           m.edit(':white_check_mark: | Conectado exitosamente.').catch(error => msg.channel.send(error));
+                     }).catch(error => msg.channel.send(error));
+                 }).catch(error => msg.channel.send(error));
+                }
+                    // args[1] es la url de reproduccion 
+                    const ytdl = require('ytdl-core');
+                    if(!voiceChannel) return msg.channel.send('¡Necesitas unirte a un canal de voz primero!.');
+                    if(args[1] == null || args[1] == undefined) return msg.channel.send('Ingrese un enlace de youtube para poder reproducirlo.');
+                    voiceChannel.join()
+                      .then(connection => {
+                        const url = ytdl(args, { filter : 'audioonly' });
+                        dispatcher = connection.play(url);
+                        msg.channel.send('Reproduciendo ahora: '+ args);
+                        msg.delete();
+                      })
+                      .catch(console.error);
+                  
+            
+        }else if(command ==="!pausa"){
+            dispatcher.pause(true);
+            msg.channel.send(':pause_button: | Musica pausada.');
+        }else if(command ==="!reanudar"){
+            dispatcher.resume(true);
+        }else if(command ==="!terminar"){
+            dispatcher.end();
+        }
+
     }
     //Help
     if (command === "!help" || (command.indexOf("!") === 0 && !commands.includes(command))) {
@@ -139,6 +177,7 @@ client.on('message', msg => {
             {name :"!mastery [summonerName]", value: "Devuelve los " + generalLimit + " campeones con mayor maestría de un jugador"},
             {name :"!mastery [summonerName] [limit]", value: "Devuelve los [limit] campeones con mayor maestría de un jugador"},
             {name :"!mmr [summonerName]", value: "Devuelve los valores de MMR para las colas de SoloQ y Normal"}
+            {name :"!p [url de youtube]", value: "Inicia la reproduccion de musica"}
         )        
         msg.channel.send( { embed } )       
     }
