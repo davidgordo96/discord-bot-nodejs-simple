@@ -17,6 +17,7 @@ client.on('ready', () => {
     console.log('Bot Now connected!');
     const dispatcher = null ;
     const connection = null;
+    const ytpl = require('ytpl');
     //Recuperación de los campeones del LOL con sus IDs
     var version = "0"
     axios.get('https://ddragon.leagueoflegends.com/api/versions.json')
@@ -175,7 +176,7 @@ client.on('message', msg => {
             {name :"!op [multiquery_OP.GG_URL]", value: "Devuelve el OP GG de una lista de jugadores separados por comas."},
             {name :"!mastery [summonerName]", value: "Devuelve los " + generalLimit + " campeones con mayor maestría de un jugador"},
             {name :"!mastery [summonerName] [limit]", value: "Devuelve los [limit] campeones con mayor maestría de un jugador"},
-            {name :"!mmr [summonerName]", value: "Devuelve los valores de MMR para las colas de SoloQ y Normal"}
+            {name :"!mmr [summonerName]", value: "Devuelve los valores de MMR para las colas de SoloQ y Normal"},
             {name :"!p [url de youtube]", value: "Inicia la reproduccion de musica"}
         )        
         msg.channel.send( { embed } )       
