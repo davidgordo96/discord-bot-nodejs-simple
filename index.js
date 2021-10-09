@@ -125,12 +125,16 @@ client.on('message', msg => {
             msg.channel.send("!op https://euw.op.gg/multi_old/query=Gordp%2Csergioycompany")
             msg.channel.send("!mastery Gordp")       
         }
+        //Devuelve el mmr pasandole el nombre de invocador
         else if (command === "!mmr") {
             embed=funciones.mmr(args, msg);
         }
+        //Arranca la musica
         else if(command ==="!p"){
             funciones.musica(args, msg);              
-        }else if(command ==="!pausa"){
+        }
+        // TODO Problemas con versiones de librerias
+        else if(command ==="!pausa"){
             dispatcher.pause(true);
             msg.channel.send(':pause_button: | Musica pausada.');
         }else if(command ==="!reanudar"){
