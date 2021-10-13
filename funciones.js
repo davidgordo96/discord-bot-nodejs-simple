@@ -36,6 +36,7 @@ let mmr= function (args,msg) {
 }
 
 let musica = function(args,msg){
+    const ytpl = require('ytpl');
     let voiceChannel = msg.member.voice.channel;
     if (!voiceChannel || voiceChannel.type !== 'voice') {
     msg.channel.send('¡Necesitas unirte a un canal de voz primero!.').catch(error => msg.channel.send(error));
@@ -52,16 +53,38 @@ let musica = function(args,msg){
         const ytdl = require('ytdl-core');
         if(!voiceChannel) return msg.channel.send('¡Necesitas unirte a un canal de voz primero!.');
         if(args[1] == null || args[1] == undefined) return msg.channel.send('Ingrese un enlace de youtube para poder reproducirlo.');
+        
+         getMusicaLista(ytdl).then(response => {
+            console.log(response);
+        }).catch(error => {
+            console.log(error);
+        });
         voiceChannel.join()
           .then(connection => {
             const url = ytdl(args, { filter : 'audioonly' });
             dispatcher = connection.play(url);
             msg.channel.send('Reproduciendo ahora: '+ args);
             msg.delete();
+            
           })
           .catch(console.error);
+
+          
 }
 
+async function getMusicaLista (youlist) {
+    const ytdl = require('ytdl-core');
+    const id = await ytdl.getVideoID("https://www.youtube.com/watch?v=lKyLqFKPsAk&ab_channel=KiddKeo");
+    const search = await ytdl(id, { limit: 15 });
+    const xx = search.readable;
+
+    const util = require('util');
+    saveString = util.inspect(search, { depth: Infinity });
+    return await ytdl(id, { pages: 1 });
+
+  
+  
+}
 
 
 module.exports = {

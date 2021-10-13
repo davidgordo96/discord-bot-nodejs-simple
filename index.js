@@ -17,7 +17,6 @@ client.on('ready', () => {
     console.log('Bot Now connected!');
     const dispatcher = null ;
     const connection = null;
-    const ytpl = require('ytpl');
     //Recuperación de los campeones del LOL con sus IDs
     var version = "0"
     axios.get('https://ddragon.leagueoflegends.com/api/versions.json')
