@@ -15,7 +15,6 @@ var embed = null;
 
 client.on('ready', () => {
     console.log('Bot Now connected!');
-    const dispatcher = null ;
     const connection = null;
     //Recuperación de los campeones del LOL con sus IDs
     var version = "0"
@@ -130,7 +129,7 @@ client.on('message', msg => {
         }
         //Arranca la musica
         else if(command ==="!p"){
-            funciones.musica(args, msg);              
+            funciones.musica(args, msg);            
         }
         // TODO Problemas con versiones de librerias
         else if(command ==="!pausa"){
