@@ -3,6 +3,7 @@ const axios = require('axios');
 const ytdl = require('ytdl-core');
 let lista = null;
 let posicion = null;
+let pos= 0;
 let dispatcher = require("streams-dispatcher");
 
 let mmr= function (args,msg) {
@@ -57,15 +58,15 @@ let musica = function(args,msg){
         // args[1] es la url de reproduccion 
         
         if(!voiceChannel) return msg.channel.send('¡Necesitas unirte a un canal de voz primero!.');
-        if(args[1] == null || args[1] == undefined) return msg.channel.send('Ingrese un enlace de youtube para poder reproducirlo.');
+        if(args == null || args == undefined) return msg.channel.send('Ingrese un enlace de youtube para poder reproducirlo.');
         
         voiceChannel.join()
           .then(connection => {
-            getMusicaLista(args[1]).then(response => {
-                lista = response.items
-                pos = 1;
-                let url = ytdl(lista[0].url, { filter : 'audioonly' });
-                dispatcher = connection.play(url);
+            getMusicaLista(args).then(response => {
+                lista = response.items;
+                play(connection);
+                
+                
             }).
             catch(error => {
                 console.log(error);
@@ -74,6 +75,19 @@ let musica = function(args,msg){
           .catch(console.error);
 }
 
+function play(connection){
+    let url = ytdl(lista[pos].url, { filter : 'audioonly' });
+                
+    dispatcher = connection.play(url).on('finish', () => {
+       
+        pos++;
+        // Llama a la función de reproducción nuevamente con la siguiente canción
+        play(connection);
+      })
+      .on('error', error => {
+       console.error(error);
+      });;
+} 
 
 async function terminado (dispatcher) {
     while(true){
@@ -90,7 +104,7 @@ async function terminado (dispatcher) {
 
 async function getMusicaLista (youlist) {
     const ytpl = require('ytpl');
-    return await ytpl("https://www.youtube.com/playlist?list=PLe5yHWLy8emkvLsSN0wDjlDklxnstWGdd", { pages: 1 });
+    return await ytpl(youlist, { pages: 1 });
     
 }
 
